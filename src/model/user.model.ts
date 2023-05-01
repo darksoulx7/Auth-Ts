@@ -1,6 +1,6 @@
 import { getModelForClass, modelOptions, prop, Severity, pre, DocumentType } from "@typegoose/typegoose";
 import argon2 from "argon2";
-import { nanoid } from "nanoid";
+import { nanoid } from '../utils/nanoId'
 import log from "../utils/logger";
 
 @pre<User>("save", async function () {
