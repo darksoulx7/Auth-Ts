@@ -9,7 +9,7 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput>, r
     try {
         const user = await createUser(body);
         await sendEmail({
-            from: 'harshankpatel99@example.com',
+            from: 'awesomefakeemail@example.com',
             to: user.email,
             subject: "Please Verify your acccount",
             text: `verification code ${user.verificationCode}. Id: ${user._id}`,
