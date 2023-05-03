@@ -6,7 +6,9 @@ const mapErrorMessages: any = {
     "lastname": "Last Name",
     "email": "Email",
     "password": "Password",
-    "passwordConfirmation": "Password Confirmation"
+    "passwordConfirmation": "Password Confirmation",
+    "verficationCode": "Verification Code",
+    "id": "User id",
 }
 
 const validateResource = (schema: AnyZodObject) => (req: Request, res: Response, next: NextFunction) => {
