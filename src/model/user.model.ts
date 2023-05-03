@@ -1,4 +1,4 @@
-import { getModelForClass, modelOptions, prop, Severity, pre, DocumentType } from "@typegoose/typegoose";
+import { getModelForClass, modelOptions, prop, Severity, pre, DocumentType, index } from "@typegoose/typegoose";
 import argon2 from "argon2";
 import { nanoid } from '../utils/nanoId'
 import log from "../utils/logger";
@@ -12,6 +12,7 @@ import log from "../utils/logger";
     return;
 })
 
+@index({email: 1})
 @modelOptions({
     schemaOptions: {
         timestamps: true

@@ -1,7 +1,9 @@
-import { CreateUserInput, verifyUserInput } from './../schema/user.schema';
+import { CreateUserInput, VerifyUserInput, ForgotPasswordInput } from './../schema/user.schema';
 import { Request, Response } from "express";
-import { createUser, findUserById } from '../service/user.service';
+import { createUser, findUserById, findUserByEmail } from '../service/user.service';
 import sendEmail from '../utils/mailer';
+import log from '../utils/logger';
+import { nanoid } from '../utils/nanoId';
 
 export async function createUserHandler(req: Request<{}, {}, CreateUserInput>, res: Response) {
     const body = req.body;
@@ -25,7 +27,7 @@ export async function createUserHandler(req: Request<{}, {}, CreateUserInput>, r
     }
 }
 
-export async function verfiyUserHandler(req: Request<verifyUserInput>, res: Response) {
+export async function verfiyUserHandler(req: Request<VerifyUserInput>, res: Response) {
     const id = req.params.id;
     const verificationCode = req.params.verificationCode;
     // find user by id 
@@ -50,4 +52,34 @@ export async function verfiyUserHandler(req: Request<verifyUserInput>, res: Resp
 
     return res.send('Could not verify user');
 
+}
+
+export async function forgotPasswordHandler(req: Request<{},{}, ForgotPasswordInput>, res: Response) {
+    const { email } = req.body;
+
+    const message = "If a user with that email is registered you will receive a password reset email";
+    const user = await findUserByEmail(email);
+
+    if(!user) {
+        log.debug(`User with email ${email} does not exist`);
+        return res.send(message)
+    }
+
+    if(!user.verified) {
+        return res.send("User is not verified");
+    }
+
+    const passwordResetCode = nanoid()
+    user.passwordResetCode = passwordResetCode
+    await user.save()
+
+    await sendEmail({
+        to: user.email,
+        from:  'test@example.com',
+        subject: 'Reset Your Password',
+        text: `Password reser code: ${passwordResetCode}. Id ${user._id}`
+    })
+
+    log.debug(`Password reset email sent to ${email}`)
+    return res.send(message)
 }
